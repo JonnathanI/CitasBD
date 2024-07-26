@@ -1,6 +1,8 @@
 package com.example.citasmed.service
 
+import com.example.citasmed.model.Doctor
 import com.example.citasmed.model.Patients
+import com.example.citasmed.repository.DoctorRepository
 import com.example.citasmed.repository.PatientsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -16,39 +18,33 @@ class PatientsService {
         return patientsRepository.findAll()
     }
 
+    fun listById(id: Long): Patients {
+        return patientsRepository.findById(id)
+        .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Paciente con el $id no Encontrado" )}
+    }
+
     fun save(patients: Patients): Patients {
         return patientsRepository.save(patients)
     }
 
     fun update(patients: Patients): Patients {
-        try {
-            patientsRepository.findById(patients.id?: throw Exception("Paciente no Encontrada"))
-            return patientsRepository.save(patients)
-        }catch (ex: Exception){
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, ex.message)
-        }
+        val existingPatients = patientsRepository.findById(patients.id)
+            .orElseThrow{ResponseStatusException(HttpStatus.NOT_FOUND , "Paciente con el ${patients.id} no Encontrado" )}
+        existingPatients.nui = patients.nui
+        return patientsRepository.save(existingPatients)
     }
 
-    fun updateFullName(patients: Patients): Patients {
-        try {
-            val response = patientsRepository.findById(patients.id)?: throw Exception("Paciente Incorrectos")
-            response.apply {
-                fullName = patients.fullName
-            }
-            return patientsRepository.save(response)
-        } catch (ex: Exception) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, ex.message)
-        }
+    fun updateName(patients: Patients): Patients {
+       val existingPatients = patientsRepository.findById(patients.id)
+           .orElseThrow{ResponseStatusException(HttpStatus.NOT_FOUND,"Paciente con el ${patients.id} no Encontrado" )}
+        existingPatients.fullName = patients.fullName
+        return patientsRepository.save(existingPatients)
     }
     fun delete(id: Long) {
-        try {
-            val response = patientsRepository.findById(id).orElseThrow {
-                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Paciente no Encontrados: $id")
-            }
-            patientsRepository.delete(response)
-        } catch (ex: Exception) {
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al eliminar el Paciente", ex)
-        }
+      if(!patientsRepository.existsById(id)){
+          throw ResponseStatusException(HttpStatus.NOT_FOUND, "Pciente con el $id no Encontrado")
+      }
+        patientsRepository.deleteById(id)
     }
 
 }

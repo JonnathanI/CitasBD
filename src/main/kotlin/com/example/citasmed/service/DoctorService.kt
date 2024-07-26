@@ -16,39 +16,33 @@ class DoctorService {
         return doctorRepository.findAll()
     }
 
+    fun listById(id: Long): Doctor {
+        return doctorRepository.findById(id)
+        .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor con el $id no Encontrado" )}
+    }
+
     fun save(doctor: Doctor): Doctor {
         return doctorRepository.save(doctor)
     }
 
     fun update(doctor: Doctor): Doctor {
-        try {
-            doctorRepository.findById(doctor.id?: throw Exception("Doctor no Encontrada"))
-            return doctorRepository.save(doctor)
-        }catch (ex: Exception){
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, ex.message)
-        }
+        val existingDoctor = doctorRepository.findById(doctor.id)
+            .orElseThrow{ResponseStatusException(HttpStatus.NOT_FOUND , "Doctor con el ${doctor.id} no Encontrado" )}
+        existingDoctor.nui = doctor.nui
+        return doctorRepository.save(existingDoctor)
     }
 
     fun updateName(doctor: Doctor): Doctor {
-        try {
-            val response = doctorRepository.findById(doctor.id)?: throw Exception("Doctor Incorrectos")
-            response.apply {
-                fullName = doctor.fullName
-            }
-            return doctorRepository.save(response)
-        } catch (ex: Exception) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, ex.message)
-        }
+       val existingDoctor = doctorRepository.findById(doctor.id)
+           .orElseThrow{ResponseStatusException(HttpStatus.NOT_FOUND,"Doctor con el ${doctor.id} no Encontrado" )}
+        existingDoctor.nui = doctor.nui
+        return doctorRepository.save(existingDoctor)
     }
     fun delete(id: Long) {
-        try {
-            val response = doctorRepository.findById(id).orElseThrow {
-                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor no Encontrados: $id")
-            }
-            doctorRepository.delete(response)
-        } catch (ex: Exception) {
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al eliminar el Doctor", ex)
-        }
+      if(!doctorRepository.existsById(id)){
+          throw ResponseStatusException(HttpStatus.NOT_FOUND, "Doctor con el $id no Encontrado")
+      }
+        doctorRepository.deleteById(id)
     }
 
 }

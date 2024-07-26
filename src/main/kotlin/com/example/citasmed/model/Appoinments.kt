@@ -13,10 +13,10 @@ class Appoinments {
     @Column(name = "created_at")
     var createdAt: Date? = null
     var reason: String? = null
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(name = "patients_id")
     var patients:Patients? = null
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(name = "doctor_id")
     var doctor:Doctor? = null
 }

@@ -1,4 +1,4 @@
-package com.example.evam2.config
+package com.example.citasmed.config
 
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,12 +30,9 @@ class SecurityConfig {
             .authorizeHttpRequests { authRequest ->
                 authRequest
                     .requestMatchers("/auth/**").permitAll()
-                    .requestMatchers("/film/**").hasAnyRole("admin")
-                    .requestMatchers("/scene/**").hasAnyRole("admin")
-                    .requestMatchers("/characters/**").hasAnyRole("admin")
-
-
-
+                    .requestMatchers("/appoinments/**").hasAnyRole("admin","paciente")
+                    .requestMatchers("/doctor/**").hasAnyRole("admin")
+                    .requestMatchers("/patients/**").hasAnyRole("admin")
                     .anyRequest().denyAll()
             }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)

@@ -1,7 +1,6 @@
 package com.example.citasmed.config
 
 import com.example.citasmed.service.UserSecurityService
-import com.example.evam2.config.JwtUtil
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

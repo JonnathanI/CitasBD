@@ -1,4 +1,4 @@
-package com.example.evam2.config
+package com.example.citasmed.config
 
 
 import org.springframework.context.annotation.*
